@@ -135,8 +135,6 @@ object DatabaseFactory {
         return if (jdbcUrl.contains("?")) "$jdbcUrl&sslmode=require" else "$jdbcUrl?sslmode=require"
     }
 
-    fun isReady(): Boolean = dataSource != null && !dataSource!!.isClosed
-
     private fun org.jetbrains.exposed.sql.Transaction.ensureVadodaraChapter() {
         if (Chapters.selectAll().where { Chapters.id eq VADODARA_CHAPTER_ID }.empty()) {
             Chapters.insert {
