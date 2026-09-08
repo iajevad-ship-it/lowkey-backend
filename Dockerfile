@@ -1,14 +1,16 @@
 # syntax=docker/dockerfile:1
 
-FROM gradle:8.14.3-jdk21-alpine AS build
+FROM gradle:8.14-jdk21 AS build
 WORKDIR /home/gradle/src
 COPY --chown=gradle:gradle . .
-RUN gradle installDist --no-daemon
+RUN gradle installDist --no-daemon --stacktrace
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre
 WORKDIR /app
-RUN apk add --no-cache wget \
-  && addgroup -S lowkey && adduser -S lowkey -G lowkey
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends wget \
+  && rm -rf /var/lib/apt/lists/* \
+  && groupadd -r lowkey && useradd -r -g lowkey lowkey
 COPY --from=build /home/gradle/src/build/install/lowkey-backend /app
 USER lowkey
 ENV HOST=0.0.0.0

@@ -22,6 +22,10 @@ application {
 
 repositories {
     mavenCentral()
+    maven {
+        name = "SignalBuildArtifacts"
+        url = uri("https://build-artifacts.signal.org/libraries/maven/")
+    }
 }
 
 dependencies {
