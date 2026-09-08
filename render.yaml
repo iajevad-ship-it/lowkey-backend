@@ -1,0 +1,45 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploys API + Postgres + Redis (Key Value) so the Android app is not tied to a local machine.
+
+databases:
+  - name: lowkey-db
+    plan: free
+    databaseName: lowkey
+    user: lowkey
+
+services:
+  - type: keyvalue
+    name: lowkey-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: [] # allow internal connections from Render services only
+
+  - type: web
+    name: lowkey-api
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /health
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: HOST
+        value: "0.0.0.0"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lowkey-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: lowkey-redis
+          property: connectionString
+      - key: FCM_ENABLED
+        value: "false"
+      - key: SOS_RADIUS_METERS
+        value: "500"
+      - key: LOCATION_TTL_SECONDS
+        value: "300"
+      - key: RETENTION_DAYS
+        value: "90"

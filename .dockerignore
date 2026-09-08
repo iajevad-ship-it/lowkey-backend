@@ -1,0 +1,10 @@
+.gradle
+build/
+.idea/
+*.iml
+*.log
+.env
+local.properties
+.kotlin/
+.DS_Store
+firebase-debug.log

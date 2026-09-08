@@ -1,0 +1,20 @@
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+*.class
+*.log
+.DS_Store
+
+.env
+local.properties
+
+# Kotlin
+.kotlin/
