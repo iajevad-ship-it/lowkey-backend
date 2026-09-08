@@ -24,4 +24,5 @@ Then rebuild the release APK.
 ## Notes
 - Free web services on Render **spin down** after idle time; first request can take ~30–60s. For always-on, upgrade the web plan.
 - Free Postgres may require a paid plan on newer Render accounts — upgrade if Blueprint creation fails on the DB.
-- Set `FCM_ENABLED=true` + Firebase credentials later for push; not required for chat over WebSockets while the app is open.
+- Set `FCM_ENABLED=true`, `FCM_PROJECT_ID=lowkey-iaj`, and `FCM_CREDENTIALS_JSON` (full service-account JSON) for push; not required for chat over WebSockets while the app is open.
+- Public privacy policy: `GET /privacy` (used by Play Console and the About screen).

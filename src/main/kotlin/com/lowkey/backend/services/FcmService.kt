@@ -37,6 +37,10 @@ class FcmService(
     private val credentialsPath: String =
         config.propertyOrNull("fcm.credentialsPath")?.getString()?.trim().orEmpty()
 
+    /** Inline service-account JSON (Render secret). Preferred over a file path in containers. */
+    private val credentialsJson: String =
+        config.propertyOrNull("fcm.credentialsJson")?.getString()?.trim().orEmpty()
+
     private val http = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true; encodeDefaults = true })
@@ -46,11 +50,11 @@ class FcmService(
     private val cachedCredentials = AtomicReference<GoogleCredentials?>(null)
 
     val isConfigured: Boolean =
-        enabled && projectId.isNotBlank() && credentialsPath.isNotBlank()
+        enabled && projectId.isNotBlank() && (credentialsPath.isNotBlank() || credentialsJson.isNotBlank())
 
     init {
         if (enabled && !isConfigured) {
-            log.warn("FCM enabled but FCM_PROJECT_ID / GOOGLE_APPLICATION_CREDENTIALS incomplete — pushes disabled")
+            log.warn("FCM enabled but FCM_PROJECT_ID / credentials incomplete — pushes disabled")
         } else if (isConfigured) {
             log.info("FCM HTTP v1 ready for project {}", projectId)
         }
@@ -140,9 +144,14 @@ class FcmService(
     }
 
     private fun loadCredentials(): GoogleCredentials {
+        val scoped = listOf("https://www.googleapis.com/auth/firebase.messaging")
+        if (credentialsJson.isNotBlank()) {
+            return credentialsJson.byteInputStream().use { stream ->
+                GoogleCredentials.fromStream(stream).createScoped(scoped)
+            }
+        }
         FileInputStream(credentialsPath).use { stream ->
-            return GoogleCredentials.fromStream(stream)
-                .createScoped(listOf("https://www.googleapis.com/auth/firebase.messaging"))
+            return GoogleCredentials.fromStream(stream).createScoped(scoped)
         }
     }
 }

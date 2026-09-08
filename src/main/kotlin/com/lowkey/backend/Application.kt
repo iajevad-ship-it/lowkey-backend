@@ -21,6 +21,7 @@ import com.lowkey.backend.routes.eventRoutes
 import com.lowkey.backend.routes.healthRoutes
 import com.lowkey.backend.routes.marketplaceRoutes
 import com.lowkey.backend.routes.moderatorRoutes
+import com.lowkey.backend.routes.privacyRoutes
 import com.lowkey.backend.routes.reportRoutes
 import com.lowkey.backend.services.AccountService
 import com.lowkey.backend.services.ChatExpiryService
@@ -121,6 +122,7 @@ fun Application.module() {
 
     routing {
         healthRoutes()
+        privacyRoutes()
         authRoutes(challengeService)
         chapterRoutes(accountService)
         accountRoutes(accountService, preKeyBundleService)
